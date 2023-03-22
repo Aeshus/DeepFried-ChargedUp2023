@@ -200,23 +200,17 @@ public class RobotContainer {
     final double setpoint3 = -62;
 
     // Elevator Buttons
-    if (opJoy.getAButton())
-      m_elevatorPID.setGoal(0);
-    else if (opJoy.getBButton())
-      m_elevatorPID.setGoal(setpoint1);
-    else if (opJoy.getYButton())
-      m_elevatorPID.setGoal(setpoint2);
-    else if (opJoy.getXButton())
-      m_elevatorPID.setGoal(setpoint3);
-    else if (opJoy.getAButton())
-
-    enableElevatorPID();
+    if (opJoy.getAButton()) m_elevatorPID.setGoal(0);
+    else if (opJoy.getBButton()) m_elevatorPID.setGoal(setpoint1);
+    else if (opJoy.getYButton()) m_elevatorPID.setGoal(setpoint2);
+    else if (opJoy.getXButton()) m_elevatorPID.setGoal(setpoint3);
+    else if (opJoy.getAButton()) enableElevatorPID();
 
     // Roller Buttons
     if (opJoy.getRightBumper()) {
       m_intakeSub.intakeRoll.set(1);
       lastHeld = RollerState.CONE;
-    }else if (opJoy.getLeftBumper()) {
+    } else if (opJoy.getLeftBumper()) {
       m_intakeSub.intakeRoll.set(-0.8);
       lastHeld = RollerState.CUBE;
     } else if (lastHeld == RollerState.CONE) {
@@ -227,12 +221,9 @@ public class RobotContainer {
       m_intakeSub.intakeRoll.set(0);
     }
 
-    if (opJoy.getBackButton())
-      m_intakeSub.intakeRaise.set(0.2);
-    else if (opJoy.getStartButton())
-      m_intakeSub.intakeRaise.set(-0.6);
+    if (opJoy.getBackButton()) m_intakeSub.intakeRaise.set(0.2);
+    else if (opJoy.getStartButton()) m_intakeSub.intakeRaise.set(-0.6);
   }
-
 
   /*
    * Enables elevator PID
