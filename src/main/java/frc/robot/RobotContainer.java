@@ -204,7 +204,8 @@ public class RobotContainer {
     else if (opJoy.getBButton()) m_elevatorPID.setGoal(setpoint1);
     else if (opJoy.getYButton()) m_elevatorPID.setGoal(setpoint2);
     else if (opJoy.getXButton()) m_elevatorPID.setGoal(setpoint3);
-    else if (opJoy.getAButton()) enableElevatorPID();
+
+    enableElevatorPID();
 
     // Roller Buttons
     if (opJoy.getRightBumper()) {
