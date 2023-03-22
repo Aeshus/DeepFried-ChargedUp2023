@@ -14,15 +14,12 @@ public class AutoBalanceB extends CommandBase {
   /** Creates a new AutoBalance. */
   public AutoBalanceB() {
     // Use addRequirements() here to declare subsystem dependencies.
-   autoBalanceCommand = new autoBalance();
+    autoBalanceCommand = new autoBalance();
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-
-
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -30,14 +27,14 @@ public class AutoBalanceB extends CommandBase {
     double speed = autoBalanceCommand.autoBalanceRoutine();
     Robot.m_robotContainer.m_DriveBase.m_drive.arcadeDrive(-speed, 0);
 
- //   Robot.m_robotContainer.m_DriveBase.m_drive.arcadeDrive(speed, 0);
+    //   Robot.m_robotContainer.m_DriveBase.m_drive.arcadeDrive(speed, 0);
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-  //  Robot.m_robotContainer.m_DriveBase.m_drive.arcadeDrive(0, 0);
+    //  Robot.m_robotContainer.m_DriveBase.m_drive.arcadeDrive(0, 0);
   }
 
   // Returns true when the command should end.

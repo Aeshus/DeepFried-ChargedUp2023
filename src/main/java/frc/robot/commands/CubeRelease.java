@@ -27,7 +27,6 @@ public class CubeRelease extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     Robot.m_robotContainer.m_intakeSub.intakeRoll.set(0);
-
   }
 
   // Returns true when the command should end.

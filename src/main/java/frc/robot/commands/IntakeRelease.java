@@ -15,14 +15,12 @@ public class IntakeRelease extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     Robot.m_robotContainer.m_intakeSub.intakeRoll.set(-0.8);
-
   }
 
   // Called once the command ends or is interrupted.

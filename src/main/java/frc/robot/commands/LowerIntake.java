@@ -21,7 +21,6 @@ public class LowerIntake extends CommandBase {
   @Override
   public void execute() {
     Robot.m_robotContainer.m_intakeSub.intakeRaise.set(0.6);
-
   }
 
   // Called once the command ends or is interrupted.

@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
- // private Command m_autonomousCommand;
+  // private Command m_autonomousCommand;
 
   public static RobotContainer m_robotContainer;
   /**
@@ -30,8 +30,6 @@ public class Robot extends TimedRobot {
     m_robotContainer.roboInit();
 
     CameraServer.startAutomaticCapture();
-
-
   }
 
   /**
@@ -64,12 +62,11 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
 
     m_robotContainer.autoInit();
-    
 
-  //   // schedule the autonomous command (example)
-  //   if (m_autonomousCommand != null) {
-  //     m_autonomousCommand.schedule();
-  //   }
+    //   // schedule the autonomous command (example)
+    //   if (m_autonomousCommand != null) {
+    //     m_autonomousCommand.schedule();
+    //   }
   }
 
   /** This function is called periodically during autonomous. */
@@ -90,7 +87,7 @@ public class Robot extends TimedRobot {
     // if (m_autonomousCommand != null) {
     //   m_autonomousCommand.cancel();
     // }
-     m_robotContainer.teleOperatedInit();
+    m_robotContainer.teleOperatedInit();
   }
 
   /** This function is called periodically during operator control. */
@@ -117,4 +114,3 @@ public class Robot extends TimedRobot {
   @Override
   public void simulationPeriodic() {}
 }
-

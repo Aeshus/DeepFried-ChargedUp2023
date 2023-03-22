@@ -17,14 +17,12 @@ public class ElevatorRaiseTop extends CommandBase {
   @Override
   public void initialize() {
     Robot.m_robotContainer.m_elevatorPID.enable();
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     Robot.m_robotContainer.m_elevatorPID.setGoal(-50);
-
   }
 
   // Called once the command ends or is interrupted.
