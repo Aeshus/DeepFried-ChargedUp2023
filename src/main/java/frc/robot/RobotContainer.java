@@ -37,7 +37,7 @@ import frc.robot.subsystems.autoBalance;
 import java.io.IOException;
 import java.nio.file.Path;
 
-/**
+/*
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
@@ -162,10 +162,12 @@ public class RobotContainer {
    * Initializes autonomous control
    */
   public void autoInit() {
+    // Reset everything
     m_DriveBase.m_gyro.reset();
     m_DriveBase.resetEncoders();
     m_elevatorPID.encoderR.setPosition(0);
 
+    // Follow the selected path.
     if (autoChooser.getSelected() != null) {
       m_autonomousCommand = getAutonomousCommand(autoChooser.getSelected());
       m_autonomousCommand.schedule();
@@ -188,10 +190,13 @@ public class RobotContainer {
     lastHeld = RollerState.NEITHER;
   }
 
+  /*
+   * Enable manual control
+   */
   public void teleoperatedPeriodic() {
     SmartDashboard.putNumber("Encoder Right", m_elevatorPID.encoderR.getPosition());
 
-    // Driving Junk
+    // Use Left-Y axis for driving, Right-X axis for rotation
     m_DriveBase.m_drive.curvatureDrive(-getDriveJoyYL(), -getDriveJoyXR(), true);
 
     // Elevator Set-points - Magic Numbers?
@@ -240,10 +245,16 @@ public class RobotContainer {
     m_elevatorPID.disable();
   }
 
-  // Commands
-
-  // Automated path following
-
+  /*
+   * Give command to follow path depending on the path name given.
+   *
+   * Can return null...
+   *
+   * TODO: Replace with Optional<Command>
+   *
+   * @param path name
+   * @return Command to follow for path
+   */
   public Command getAutonomousCommand(String path) {
     switch (path) {
       case "PreloadPath1B": // Launches Cube Ground, AutoDocks
@@ -325,8 +336,15 @@ public class RobotContainer {
     return null;
   }
 
-  /**
-   * @TODO Auto-generated catch block
+  /*
+   * Reads given file and follows path.
+   *
+   * Can return null if can't read path...
+   *
+   * @param trajectoryJSON path to path (encoded in JSON)
+   * @param multiPath ??
+   *
+   * @return Path command
    */
   public Command pathFollow(String trajectoryJSON, boolean multiPath) {
     try {
@@ -334,6 +352,7 @@ public class RobotContainer {
       trajectory = TrajectoryUtil.fromPathweaverJson(testTrajectory);
     } catch (final IOException ex) {
       DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+      return null;
     }
 
     RamseteCommand ramseteCommand =
