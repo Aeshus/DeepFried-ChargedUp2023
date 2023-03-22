@@ -82,14 +82,13 @@ public class RobotContainer {
   /*
    * Normalized magnitude for a given axis of xbox Controller.
    *
-   * <p>Axises:
+   * Axises:
    * 1. LX Axis
    * 2. LY Axis
    * 3. L Trigger
    * 4. R Trigger
    * 5. RX Axis
    * 6. RY Axis
-   * </p>
    *
    * @param axis joystick Axis
    * @return range between 1-0.
@@ -175,7 +174,7 @@ public class RobotContainer {
   }
 
   /*
-   * Adds the tilt to smart-dashboard
+   * Polls autonomous events (Tilt)
    */
   public void autoPeriodic() {
     m_autoBalance.getTilt();
@@ -191,7 +190,7 @@ public class RobotContainer {
   }
 
   /*
-   * Enable manual control
+   * Polls for inputs and executes any found.
    */
   public void teleoperatedPeriodic() {
     SmartDashboard.putNumber("Encoder Right", m_elevatorPID.encoderR.getPosition());
