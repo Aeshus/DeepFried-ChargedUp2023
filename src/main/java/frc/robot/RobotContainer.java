@@ -44,8 +44,7 @@ import java.nio.file.Path;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-
+  // Joysticks & Xbox Controllers
   public final XboxController driveJoy = new XboxController(0);
   public final XboxController opJoy = new XboxController(1);
   public final JoystickButton aButton = new JoystickButton(opJoy, 1);
@@ -65,32 +64,81 @@ public class RobotContainer {
   public Command m_autonomousCommand;
   public SendableChooser<String> autoChooser = new SendableChooser<String>();
 
-  int lastHeld;
-  static final int CONE = 1;
-  static final int CUBE = 2;
-  // public boolean Bumpertoggle= false;
+  /*
+   * Manages the 3 states of the roller
+   * 1. Cone
+   * 2. Cube
+   * 3. Neither
+   */
+  public enum RollerState {
+    CONE,
+    CUBE,
+    NEITHER
+  }
 
+  // Last held object by Roller
+  RollerState lastHeld;
+
+  /*
+   * Normalized magnitude for a given axis of xbox Controller.
+   *
+   * <p>Axises:
+   * 1. LX Axis
+   * 2. LY Axis
+   * 3. L Trigger
+   * 4. R Trigger
+   * 5. RX Axis
+   * 6. RY Axis
+   * </p>
+   *
+   * @param axis joystick Axis
+   * @return range between 1-0.
+   */
   public double getDriveJoy(int axis) {
-    double raw = driveJoy.getRawAxis(axis);
+    return normalizeJoy(driveJoy.getRawAxis(axis));
+  }
+
+  /*
+   * Gets the absolute value of the raw input (range -1 -> 1 becomes 0 -> 1).
+   * Then ignores any magnitudes less than 0.1 (dead-zone).
+   *
+   * @param raw joystick value
+   * @return axis magnitude
+   */
+  private double normalizeJoy(double raw) {
     return Math.abs(raw) < 0.1 ? 0.0 : raw;
   }
 
+  /*
+   * Magnitude of the x-axis of right joystick.
+   * Used for Rotation
+   *
+   * @return magnitude
+   */
   public double getDriveJoyXR() {
-    double raw = getDriveJoy(4);
-    return raw / 2.5;
-    // return Math.abs(raw) < 0.1 ? 0.0 : raw > 0 ? (raw * raw) / 1.5 : (-raw * raw) / 1.5;
+    return getDriveJoy(4) / 2.5;
   }
 
+  /*
+   * Magnitude of the y-axis of left joystick.
+   * Used for Forward
+   *
+   * @return magnitude
+   */
   public double getDriveJoyYL() {
-    double raw = getDriveJoy(1);
-    return raw;
-    // return Math.abs(raw) < 0.1 ? 0.0 : raw > 0 ? (raw * raw) / 1.5 : (-raw * raw) / 1.5;
+    return getDriveJoy(1);
   }
 
+  /*
+   * Null constructor
+   * Simply builds class as a container and runs the individual *Init() functions.
+   */
   public RobotContainer() {}
 
+  /*
+   * Initialize Smart-dashboard
+   */
   public void roboInit() {
-
     autoChooser.addOption("CubeLow+AutoDock", "PreloadPath1B");
     autoChooser.addOption("MobilityPathBackwards", "DockPath");
     autoChooser.addOption("MobilityPathForwards", "DockPath2");
@@ -110,6 +158,9 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Routine", autoChooser);
   }
 
+  /*
+   * Initializes autonomous control
+   */
   public void autoInit() {
     m_DriveBase.m_gyro.reset();
     m_DriveBase.resetEncoders();
@@ -121,84 +172,78 @@ public class RobotContainer {
     }
   }
 
+  /*
+   * Adds the tilt to smart-dashboard
+   */
   public void autoPeriodic() {
-
     m_autoBalance.getTilt();
     SmartDashboard.putNumber("Tilt", m_autoBalance.getTilt());
-
-    // double speed = m_autoBalance.autoBalanceRoutine();
-
-    // m_DriveBase.m_drive.feed();
-    // m_DriveBase.m_drive.setSafetyEnabled(false);
-
   }
 
-  // public void autoBalanceDrive(){
-  //   double speed = m_DriveBase.scoreAndBalance();
-  //   m_DriveBase.m_drive.arcadeDrive(speed,0);
-  // }
-
+  /*
+   * Resets device and allows for remote control
+   */
   public void teleOperatedInit() {
     m_DriveBase.resetEncoders();
-    // m_elevatorPID.enable();
-    //  m_elevatorPID.encoderR.setPosition(0);
-    // m_intakePIDSub.intakeEncoder.setPosition(0);
-    lastHeld = 3;
+    lastHeld = RollerState.NEITHER;
   }
 
   public void teleoperatedPeriodic() {
-
     SmartDashboard.putNumber("Encoder Right", m_elevatorPID.encoderR.getPosition());
 
     // Driving Junk
-
     m_DriveBase.m_drive.curvatureDrive(-getDriveJoyYL(), -getDriveJoyXR(), true);
 
-    // Local Variables - Elevator Setpoints
-    double setpoint1 = -20;
-    double setpoint2 = -54;
-    double setpoint3 = -62;
+    // Elevator Set-points - Magic Numbers?
+    final double setpoint1 = -20;
+    final double setpoint2 = -54;
+    final double setpoint3 = -62;
 
-    // BUTTON CONTROLS
-
-    // ----Elevator-----------
-    if (opJoy.getBButton()) {
-      m_elevatorPID.setGoal(setpoint1);
-      m_elevatorPID.enable();
-    } else if (opJoy.getYButton()) {
-      m_elevatorPID.setGoal(setpoint2);
-      ;
-    } else if (opJoy.getAButton()) {
+    // Elevator Buttons
+    if (opJoy.getAButton())
       m_elevatorPID.setGoal(0);
-      m_elevatorPID.enable();
-    } else if (opJoy.getXButton()) {
+    else if (opJoy.getBButton())
+      m_elevatorPID.setGoal(setpoint1);
+    else if (opJoy.getYButton())
+      m_elevatorPID.setGoal(setpoint2);
+    else if (opJoy.getXButton())
       m_elevatorPID.setGoal(setpoint3);
-      m_elevatorPID.enable();
-    }
+    else if (opJoy.getAButton())
 
-    // ----Intake Rollers ----
+    enableElevatorPID();
+
+    // Roller Buttons
     if (opJoy.getRightBumper()) {
       m_intakeSub.intakeRoll.set(1);
-      lastHeld = CONE;
-    } else if (opJoy.getLeftBumper()) {
+      lastHeld = RollerState.CONE;
+    }else if (opJoy.getLeftBumper()) {
       m_intakeSub.intakeRoll.set(-0.8);
-      lastHeld = CUBE;
-    } else if (lastHeld == CONE) {
+      lastHeld = RollerState.CUBE;
+    } else if (lastHeld == RollerState.CONE) {
       m_intakeSub.intakeRoll.set(0.2);
-    } else if (lastHeld == CUBE) {
+    } else if (lastHeld == RollerState.CUBE) {
       m_intakeSub.intakeRoll.set(-0.2);
     } else {
       m_intakeSub.intakeRoll.set(0);
     }
 
-    if (opJoy.getBackButton()) {
+    if (opJoy.getBackButton())
       m_intakeSub.intakeRaise.set(0.2);
-    } else if (opJoy.getStartButton()) {
+    else if (opJoy.getStartButton())
       m_intakeSub.intakeRaise.set(-0.6);
-    }
   }
 
-  // Disables and resets elevator PID
+
+  /*
+   * Enables elevator PID
+   */
+  public void enableElevatorPID() {
+    m_elevatorPID.enable();
+  }
+
+  /*
+   * Disables elevator PID
+   */
   public void disableElevatorPID() {
     m_elevatorPID.disable();
   }
@@ -283,11 +328,6 @@ public class RobotContainer {
       case "CubeLow+Mobility":
         return new ParallelRaceGroup(new CubeRelease(), new WaitCommand(1.2))
             .andThen(pathFollow("output/DockPath.wpilib.json", false));
-
-        // case "ConeMid+Mobility":
-        // return new ParallelRaceGroup(new ElevatorRaiseMid(), new WaitCommand(0.8))
-        // .andThen(new ParallelRaceGroup(new LowerIntake(), ))
-
     }
 
     return null;
@@ -301,10 +341,8 @@ public class RobotContainer {
       Path testTrajectory = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
       trajectory = TrajectoryUtil.fromPathweaverJson(testTrajectory);
     } catch (final IOException ex) {
-
       DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
     }
-    // m_drivebase.m_gyro.reset();
 
     RamseteCommand ramseteCommand =
         new RamseteCommand(
@@ -321,10 +359,6 @@ public class RobotContainer {
             new PIDController(1, 0, 0),
             m_DriveBase::voltageControl,
             m_DriveBase);
-
-    // Run path following command, then stop at the end.
-    // Robot.m_robotContainer.m_driveAuto.m_drive.feed();
-    // m_drivebase.resetOdometry(trajectory.getInitialPose());
 
     if (!multiPath) {
       m_DriveBase.resetOdometry(trajectory.getInitialPose());
