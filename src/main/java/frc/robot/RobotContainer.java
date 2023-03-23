@@ -64,31 +64,42 @@ public class RobotContainer {
   public Command m_autonomousCommand;
   public SendableChooser<String> autoChooser = new SendableChooser<String>();
 
-  /*
-   * Manages the 3 states of the roller
-   * 1. Cone
-   * 2. Cube
-   * 3. Neither
-   */
+  /** Type for held object of Roller */
   public enum RollerState {
     CONE,
     CUBE,
     NEITHER
   }
 
+  public enum PathType {
+    DOCK_FORWARDS,
+    DOCK_BACKWARDS,
+    MOBILITY_PATH_BACKWARDS,
+    MOBILITY_PATH_FORWARDS,
+
+    CONE_MID,
+    CONE_MID_DOCK,
+    CONE_HIGH_DOCK,
+    CONE_HIGH_MOBILITY,
+    CONE_MOBILITY_DOCK,
+
+    CUBE_LOW_AUTO_DOCK,
+    CUBE_LOW_MOBILITY,
+    CUBE_MID_DOCK,
+    CUBE_HIGH,
+    CUBE_HIGH_DOCK,
+    CUBE_HIGH_ENGAGE,
+    CUBE_HIGH_MOBILITY,
+    CUBE_MOBILITY_DOCK,
+  }
+
   // Last held object by Roller
   RollerState lastHeld;
 
-  /*
+  /**
    * Normalized magnitude for a given axis of xbox Controller.
    *
-   * Axises:
-   * 1. LX Axis
-   * 2. LY Axis
-   * 3. L Trigger
-   * 4. R Trigger
-   * 5. RX Axis
-   * 6. RY Axis
+   * <p>Axes: 1. LX Axis 2. LY Axis 3. L Trigger 4. R Trigger 5. RX Axis 6. RY Axis
    *
    * @param axis joystick Axis
    * @return range between 1-0.
@@ -97,9 +108,9 @@ public class RobotContainer {
     return normalizeJoy(driveJoy.getRawAxis(axis));
   }
 
-  /*
-   * Gets the absolute value of the raw input (range -1 -> 1 becomes 0 -> 1).
-   * Then ignores any magnitudes less than 0.1 (dead-zone).
+  /**
+   * Gets the absolute value of the raw input (range -1 -> 1 becomes 0 -> 1). Then ignores any
+   * magnitudes less than 0.1 (dead-zone).
    *
    * @param raw joystick value
    * @return axis magnitude
@@ -108,9 +119,8 @@ public class RobotContainer {
     return Math.abs(raw) < 0.1 ? 0.0 : raw;
   }
 
-  /*
-   * Magnitude of the x-axis of right joystick.
-   * Used for Rotation
+  /**
+   * Magnitude of the x-axis of right joystick. Used for Rotation
    *
    * @return magnitude
    */
@@ -118,9 +128,8 @@ public class RobotContainer {
     return getDriveJoy(4) / 2.5;
   }
 
-  /*
-   * Magnitude of the y-axis of left joystick.
-   * Used for Forward
+  /**
+   * Magnitude of the y-axis of left joystick. Used for Forward
    *
    * @return magnitude
    */
@@ -128,38 +137,24 @@ public class RobotContainer {
     return getDriveJoy(1);
   }
 
-  /*
-   * Null constructor
-   * Simply builds class as a container and runs the individual *Init() functions.
+  /**
+   * Null constructor Simply builds class as a container and runs the individual *Init() functions
+   * from Robot class.
    */
   public RobotContainer() {}
 
-  /*
-   * Initialize Smart-dashboard
-   */
+  /** Initialize Smart-dashboard Automatically populated by the PathType enum. */
   public void roboInit() {
-    autoChooser.addOption("CubeLow+AutoDock", "PreloadPath1B");
-    autoChooser.addOption("MobilityPathBackwards", "DockPath");
-    autoChooser.addOption("MobilityPathForwards", "DockPath2");
-    autoChooser.addOption("Dock Backwards", "AutoBalanceDockBack");
-    autoChooser.addOption("Dock Forwards", "AutoBalanceDockForward");
-    autoChooser.addOption("ConeHigh+Dock", "ConeHigh+Dock");
-    autoChooser.addOption("ConeMid", "ConeMid+Dock");
-    autoChooser.addOption("ConeMid+Dock", "ConeMid");
-    autoChooser.addOption("CubeHigh + Dock", "CubeHigh+Dock");
-    autoChooser.addOption("Cone+Mobility+Dock", "Cone+Mobility+Dock");
-    autoChooser.addOption("Cube+Mobility+Dock", "Cube+Mobility+Dock");
-    autoChooser.addOption("CubeHigh+Mobility", "CubeHigh+Mobility");
-    autoChooser.addOption("ConeHigh+Mobility", "ConeHigh+Mobility");
-    autoChooser.addOption("CubeHigh+Engage", "Cube+Engage");
-    autoChooser.addOption("CubeLow+Mobility", "CubeLow+Mobility");
+
+    // Iterate over PathType enum and automatically populate options
+    for (PathType path : PathType.values()) {
+      autoChooser.addOption(path.name().replaceAll("_", " ").toLowerCase(), path.name());
+    }
 
     SmartDashboard.putData("Auto Routine", autoChooser);
   }
 
-  /*
-   * Initializes autonomous control
-   */
+  /** Initializes autonomous control */
   public void autoInit() {
     // Reset everything
     m_DriveBase.m_gyro.reset();
@@ -173,25 +168,19 @@ public class RobotContainer {
     }
   }
 
-  /*
-   * Polls autonomous events (Tilt)
-   */
+  /** Polls autonomous events (Tilt) */
   public void autoPeriodic() {
     m_autoBalance.getTilt();
     SmartDashboard.putNumber("Tilt", m_autoBalance.getTilt());
   }
 
-  /*
-   * Resets device and allows for remote control
-   */
+  /** Resets device and allows for remote control */
   public void teleOperatedInit() {
     m_DriveBase.resetEncoders();
     lastHeld = RollerState.NEITHER;
   }
 
-  /*
-   * Polls for inputs and executes any found.
-   */
+  /** Polls for inputs and executes any found. */
   public void teleoperatedPeriodic() {
     SmartDashboard.putNumber("Encoder Right", m_elevatorPID.encoderR.getPosition());
 
@@ -209,6 +198,7 @@ public class RobotContainer {
     else if (opJoy.getYButton()) m_elevatorPID.setGoal(setpoint2);
     else if (opJoy.getXButton()) m_elevatorPID.setGoal(setpoint3);
 
+    // Idk if one of the elevator buttons wasn't supposed to do this?
     enableElevatorPID();
 
     // Roller Buttons
@@ -230,119 +220,118 @@ public class RobotContainer {
     else if (opJoy.getStartButton()) m_intakeSub.intakeRaise.set(-0.6);
   }
 
-  /*
-   * Enables elevator PID
-   */
+  /** Enables elevator PID */
   public void enableElevatorPID() {
     m_elevatorPID.enable();
   }
 
-  /*
-   * Disables elevator PID
-   */
+  /** Disables elevator PID */
   public void disableElevatorPID() {
     m_elevatorPID.disable();
   }
 
-  /*
-   * Give command to follow path depending on the path name given.
+  /**
+   * Give command to follow path depending on the path name given. It matches the string to the enum
+   * and does the case for each one.
    *
-   * Can return null...
+   * <p>Can return null...
    *
-   * TODO: Replace with Optional<Command>
+   * <p>TODO: Replace with Optional<Command>
    *
-   * @param path name
+   * @param option name
    * @return Command to follow for path
    */
-  public Command getAutonomousCommand(String path) {
-    switch (path) {
-      case "PreloadPath1B": // Launches Cube Ground, AutoDocks
-        return new IntakeRelease().alongWith(new AutoBalanceB());
-      case "DockPath":
-        return pathFollow("output/DockPath.wpilib.json", false);
-      case "DockPath2":
-        return pathFollow("output/DockPath2.wpilib.json", false);
-      case "AutoBalanceDockBack":
-        return (new AutoBalanceB());
-      case "AutoBalanceDockForward":
+  public Command getAutonomousCommand(String command) {
+    switch (PathType.valueOf(command)) {
+      case DOCK_FORWARDS:
         return (new AutoBalanceF());
-      case "ConeHigh+Dock":
-        return new ParallelRaceGroup(new ElevatorRaiseTop(), new WaitCommand(1.2))
-            .andThen(new ParallelRaceGroup(new LowerIntake(), new WaitCommand(1.2)))
-            .andThen(new ParallelRaceGroup(new ConeRelease(), new WaitCommand(0.8)))
-            .andThen(new ParallelRaceGroup(new IntakeStow(), new WaitCommand(1.2)))
-            .andThen(new ParallelRaceGroup(new LowerELevator(), new WaitCommand(1.2)))
-            .andThen(new AutoBalanceB());
-      case "Cone+Mobility+Dock":
-        return new ParallelRaceGroup(new ElevatorRaiseTop(), new WaitCommand(1.2))
-            .andThen(new ParallelRaceGroup(new LowerIntake(), new WaitCommand(1.2)))
-            .andThen(new ParallelRaceGroup(new ConeRelease(), new WaitCommand(0.8)))
-            .andThen(new ParallelRaceGroup(new IntakeStow(), new WaitCommand(1.2)))
-            .andThen(new ParallelRaceGroup(new LowerELevator(), new WaitCommand(1.2)))
-            .andThen(pathFollow("output/DockPath.wpilib.json", false))
-            .andThen(new AutoBalanceF());
-      case "CubeMid+Dock":
-        return new ParallelRaceGroup(new ElevatorRaiseMid(), new WaitCommand(0.8))
-            .andThen(new ParallelRaceGroup(new CubeRelease()), new WaitCommand(0.8))
-            .andThen(new ParallelRaceGroup(new LowerELevator()), new WaitCommand(0.8))
-            .andThen(new AutoBalanceB());
-      case "CubeHigh+Dock":
-        return new ParallelRaceGroup(new ElevatorRaiseTop(), new WaitCommand(0.8))
-            .andThen(new ParallelRaceGroup(new CubeRelease()), new WaitCommand(0.8))
-            .andThen(new ParallelRaceGroup(new LowerELevator()), new WaitCommand(1.2))
-            .andThen(new AutoBalanceB());
-      case "ConeMid+Dock": // Cone Mid - No Dock
-        return new ParallelRaceGroup(new ElevatorRaiseMid(), new WaitCommand(0.8))
-            .andThen(new ParallelRaceGroup(new LowerIntake(), new WaitCommand(0.8)))
-            .andThen(new ParallelRaceGroup(new ConeRelease(), new WaitCommand(0.8)))
-            .andThen(new ParallelRaceGroup(new IntakeStow(), new WaitCommand(0.8)))
-            .andThen(new ParallelRaceGroup(new LowerELevator(), new WaitCommand(0.8)));
-      case "ConeMid": // Cone Mid + AutoDock
+      case DOCK_BACKWARDS:
+        return (new AutoBalanceB());
+
+      case MOBILITY_PATH_BACKWARDS:
+        return pathFollow("output/DockPath.wpilib.json", false);
+      case MOBILITY_PATH_FORWARDS:
+        return pathFollow("output/DockPath2.wpilib.json", false);
+
+      case CONE_MID: // ??
         return new ParallelRaceGroup(new ElevatorRaiseMid(), new WaitCommand(0.5))
             .andThen(new ParallelRaceGroup(new LowerIntake(), new WaitCommand(0.8)))
             .andThen(new ParallelRaceGroup(new ConeRelease(), new WaitCommand(0.8)))
             .andThen(new IntakeStow(), new WaitCommand(0.8))
             .andThen(new ParallelRaceGroup(new LowerELevator(), new WaitCommand(0.8)))
             .andThen(new AutoBalanceB());
-      case "CubeHigh+Mobility":
-        return new ParallelRaceGroup(new ElevatorRaiseTop(), new WaitCommand(0.8))
-            .andThen(new ParallelRaceGroup(new CubeRelease(), new WaitCommand(1.2)))
-            .andThen(new ParallelRaceGroup(new LowerELevator(), new WaitCommand(0.8)))
-            .andThen(pathFollow("output/DockPath.wpilib.json", false));
-      case "ConeHigh+Mobility":
+      case CONE_MID_DOCK: // ??
+        return new ParallelRaceGroup(new ElevatorRaiseMid(), new WaitCommand(0.8))
+            .andThen(new ParallelRaceGroup(new LowerIntake(), new WaitCommand(0.8)))
+            .andThen(new ParallelRaceGroup(new ConeRelease(), new WaitCommand(0.8)))
+            .andThen(new ParallelRaceGroup(new IntakeStow(), new WaitCommand(0.8)))
+            .andThen(new ParallelRaceGroup(new LowerELevator(), new WaitCommand(0.8)));
+      case CONE_HIGH_DOCK:
+        return new ParallelRaceGroup(new ElevatorRaiseTop(), new WaitCommand(1.2))
+            .andThen(new ParallelRaceGroup(new LowerIntake(), new WaitCommand(1.2)))
+            .andThen(new ParallelRaceGroup(new ConeRelease(), new WaitCommand(0.8)))
+            .andThen(new ParallelRaceGroup(new IntakeStow(), new WaitCommand(1.2)))
+            .andThen(new ParallelRaceGroup(new LowerELevator(), new WaitCommand(1.2)))
+            .andThen(new AutoBalanceB());
+      case CONE_HIGH_MOBILITY:
         return new ParallelRaceGroup(new ElevatorRaiseTop(), new WaitCommand(0.8))
             .andThen(new ParallelRaceGroup(new LowerIntake(), new WaitCommand(0.8)))
             .andThen(new ParallelRaceGroup(new ConeRelease(), new WaitCommand(1.2)))
             .andThen(new ParallelRaceGroup(new IntakeStow(), new WaitCommand(0.8)))
             .andThen(new ParallelRaceGroup(new LowerELevator(), new WaitCommand(0.8)))
             .andThen(pathFollow("output/Dockpath.wpilib.json", false));
-      case "Cube+Mobility+Dock":
+      case CONE_MOBILITY_DOCK:
+        return new ParallelRaceGroup(new ElevatorRaiseTop(), new WaitCommand(1.2))
+            .andThen(new ParallelRaceGroup(new LowerIntake(), new WaitCommand(1.2)))
+            .andThen(new ParallelRaceGroup(new ConeRelease(), new WaitCommand(0.8)))
+            .andThen(new ParallelRaceGroup(new IntakeStow(), new WaitCommand(1.2)))
+            .andThen(new ParallelRaceGroup(new LowerELevator(), new WaitCommand(1.2)))
+            .andThen(pathFollow("output/DockPath.wpilib.json", false))
+            .andThen(new AutoBalanceF());
+
+      case CUBE_LOW_AUTO_DOCK:
+        return new IntakeRelease().alongWith(new AutoBalanceB());
+      case CUBE_LOW_MOBILITY:
+        return new ParallelRaceGroup(new CubeRelease(), new WaitCommand(1.2))
+            .andThen(pathFollow("output/DockPath.wpilib.json", false));
+      case CUBE_MID_DOCK:
+        return new ParallelRaceGroup(new ElevatorRaiseMid(), new WaitCommand(0.8))
+            .andThen(new ParallelRaceGroup(new CubeRelease()), new WaitCommand(0.8))
+            .andThen(new ParallelRaceGroup(new LowerELevator()), new WaitCommand(0.8))
+            .andThen(new AutoBalanceB());
+      case CUBE_HIGH_DOCK:
+        return new ParallelRaceGroup(new ElevatorRaiseTop(), new WaitCommand(0.8))
+            .andThen(new ParallelRaceGroup(new CubeRelease()), new WaitCommand(0.8))
+            .andThen(new ParallelRaceGroup(new LowerELevator()), new WaitCommand(1.2))
+            .andThen(new AutoBalanceB());
+      case CUBE_HIGH_ENGAGE:
+        return new ParallelRaceGroup(new ElevatorRaiseTop(), new WaitCommand(1.2))
+            .andThen(new ParallelRaceGroup(new CubeRelease(), new WaitCommand(1.2)))
+            .andThen(new ParallelRaceGroup(new LowerELevator(), new WaitCommand(1.2)))
+            .andThen(pathFollow("output/EngageB.wpilib.json", false));
+      case CUBE_HIGH_MOBILITY:
+        return new ParallelRaceGroup(new ElevatorRaiseTop(), new WaitCommand(0.8))
+            .andThen(new ParallelRaceGroup(new CubeRelease(), new WaitCommand(1.2)))
+            .andThen(new ParallelRaceGroup(new LowerELevator(), new WaitCommand(0.8)))
+            .andThen(pathFollow("output/DockPath.wpilib.json", false));
+      case CUBE_MOBILITY_DOCK:
         return new ParallelRaceGroup(new ElevatorRaiseTop(), new WaitCommand(1.2))
             .andThen(new ParallelRaceGroup(new CubeRelease(), new WaitCommand(1.2)))
             .andThen(new ParallelRaceGroup(new LowerELevator(), new WaitCommand(1.2)))
             .andThen(pathFollow("output/DockPath.wpilib.json", false))
             .andThen(new AutoBalanceF());
-      case "Cube+Engage":
-        return new ParallelRaceGroup(new ElevatorRaiseTop(), new WaitCommand(1.2))
-            .andThen(new ParallelRaceGroup(new CubeRelease(), new WaitCommand(1.2)))
-            .andThen(new ParallelRaceGroup(new LowerELevator(), new WaitCommand(1.2)))
-            .andThen(pathFollow("output/EngageB.wpilib.json", false));
-      case "CubeLow+Mobility":
-        return new ParallelRaceGroup(new CubeRelease(), new WaitCommand(1.2))
-            .andThen(pathFollow("output/DockPath.wpilib.json", false));
     }
 
     return null;
   }
 
-  /*
-   * Reads given file and follows path.
+  /**
+   * Reads given file and executes path.
    *
-   * Can return null if can't read path...
+   * <p>Can return null if can't read path...
    *
-   * @param trajectoryJSON path to path (encoded in JSON)
+   * @param trajectoryJSON file for path (which encoded in JSON)
    * @param multiPath ??
-   *
    * @return Path command
    */
   public Command pathFollow(String trajectoryJSON, boolean multiPath) {

@@ -8,7 +8,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-/*
+/**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
  * the package after creating this project, you must also update the build.gradle file in the
@@ -17,11 +17,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
   public static RobotContainer m_robotContainer;
 
-  /*
+  /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    *
-   * Currently initializes button bindings & dashboard.
+   * <p>Currently initializes button bindings & dashboard.
    */
   @Override
   public void robotInit() {
@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
     CameraServer.startAutomaticCapture();
   }
 
-  /*
+  /**
    * Poll for events every 20ms.
    *
    * <p>This runs after the mode specific periodic functions, but before LiveWindow and
@@ -46,44 +46,40 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
   }
 
-  /*
+  /**
    * Initialize disabled mode
    *
-   * Disables elevator
+   * <p>Disables elevator
    */
   @Override
   public void disabledInit() {
     m_robotContainer.disableElevatorPID();
   }
 
-  /*
+  /**
    * Poll events in disabled mode
    *
-   * Should always be none?
+   * <p>Should always be none?
    */
   @Override
   public void disabledPeriodic() {}
 
-  /*
-   * Initialize autonomous mode
-   */
+  /** Initialize autonomous mode */
   @Override
   public void autonomousInit() {
     m_robotContainer.autoInit();
   }
 
-  /*
-   * Poll events (tilt) in autonomous mode.
-   */
+  /** Poll events (tilt) in autonomous mode. */
   @Override
   public void autonomousPeriodic() {
     m_robotContainer.autoPeriodic();
   }
 
-  /*
+  /**
    * Enables tele/remote operation of the Robot.
    *
-   * Cancels any autonomous commands.
+   * <p>Cancels any autonomous commands.
    */
   @Override
   public void teleopInit() {
@@ -96,38 +92,28 @@ public class Robot extends TimedRobot {
     m_robotContainer.teleOperatedInit();
   }
 
-  /*
-   * Polls for inputs periodically
-   */
+  /** Polls for inputs periodically */
   @Override
   public void teleopPeriodic() {
     m_robotContainer.teleoperatedPeriodic();
   }
 
-  /*
-   * Runs test mode, halting all commands
-   */
+  /** Runs test mode, halting all commands */
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
   }
 
-  /*
-   * Poll Test Mode
-   */
+  /** Poll Test Mode */
   @Override
   public void testPeriodic() {}
 
-  /*
-   * Initialize Simulation
-   */
+  /** Initialize Simulation */
   @Override
   public void simulationInit() {}
 
-  /*
-   * Poll Simulation Mode
-   */
+  /** Poll Simulation Mode */
   @Override
   public void simulationPeriodic() {}
 }
