@@ -4,39 +4,31 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
+import frc.robot.subsystems.DriveSubsystem;
 
 public class InvertMotors extends CommandBase {
-  /** Creates a new InvertMotors. */
-  public InvertMotors() {
-    // Use addRequirements() here to declare subsystem dependencies.
+  private DriveSubsystem m_drive;
+
+  private MotorControllerGroup m_leftMotors;
+  private MotorControllerGroup m_rightMotors;
+
+  public InvertMotors(DriveSubsystem driveSubsystem) {
+    m_drive = driveSubsystem;
+
+    addRequirements(m_drive);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
- 
+    m_leftMotors = m_drive.getLeftMotors();
+    m_rightMotors = m_drive.getRightMotors();
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Robot.m_robotContainer.m_DriveBase._left1.setInverted(false);
-    Robot.m_robotContainer.m_DriveBase._left2.setInverted(false);       
-    Robot.m_robotContainer.m_DriveBase._right1.setInverted(true);
-    Robot.m_robotContainer.m_DriveBase._right2.setInverted(true);
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
+    m_leftMotors.setInverted(!m_leftMotors.getInverted());
+    m_rightMotors.setInverted(!m_rightMotors.getInverted());
   }
 }
