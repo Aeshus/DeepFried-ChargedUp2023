@@ -42,10 +42,7 @@ public class RobotContainer {
     setDefaultKeybinds();
 
     m_drive.setDefaultCommand(
-        new DefaultDrive(
-            m_drive,
-            () -> -m_driverController.getLeftY(),
-            () -> -m_driverController.getRightX()));
+        new DefaultDrive(m_drive, () -> -m_driverController.getLeftY(), () -> -m_driverController.getRightX()));
 
     setupDashboard();
   }

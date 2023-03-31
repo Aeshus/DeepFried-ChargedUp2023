@@ -20,8 +20,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
   private final RelativeEncoder m_leftEncoder = m_leftSpark.getEncoder();
 
   public ElevatorSubsystem() {
-    super(new ProfiledPIDController(0.07, 0, 0,
-        new TrapezoidProfile.Constraints(200, 200)));
+    super(new ProfiledPIDController(0.07, 0, 0, new TrapezoidProfile.Constraints(200, 200)));
   }
 
   @Override

@@ -20,8 +20,7 @@ public class AutoBalanceBackward extends CommandBase {
   }
 
   @Override
-  public void initialize() {
-  }
+  public void initialize() {}
 
   @Override
   public void execute() {

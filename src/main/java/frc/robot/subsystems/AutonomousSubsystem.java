@@ -24,23 +24,11 @@ import frc.robot.commands.SetElevatorHeight;
 public class AutonomousSubsystem extends SubsystemBase {
 
   private enum AutonomousPath {
-    DOCK_FORWARDS,
-    DOCK_BACKWARDS,
-    MOBILITY_PATH_BACKWARDS,
-    MOBILITY_PATH_FORWARDS,
+    DOCK_FORWARDS, DOCK_BACKWARDS, MOBILITY_PATH_BACKWARDS, MOBILITY_PATH_FORWARDS,
 
-    CONE_MID,
-    CONE_MID_DOCK,
-    CONE_HIGH_DOCK,
-    CONE_HIGH_MOBILITY,
-    CONE_MOBILITY_DOCK,
+    CONE_MID, CONE_MID_DOCK, CONE_HIGH_DOCK, CONE_HIGH_MOBILITY, CONE_MOBILITY_DOCK,
 
-    CUBE_LOW_AUTO_DOCK,
-    CUBE_LOW_MOBILITY,
-    CUBE_MID_DOCK,
-    CUBE_HIGH_DOCK,
-    CUBE_HIGH_ENGAGE,
-    CUBE_HIGH_MOBILITY,
+    CUBE_LOW_AUTO_DOCK, CUBE_LOW_MOBILITY, CUBE_MID_DOCK, CUBE_HIGH_DOCK, CUBE_HIGH_ENGAGE, CUBE_HIGH_MOBILITY,
     CUBE_MOBILITY_DOCK,
   }
 
@@ -65,168 +53,96 @@ public class AutonomousSubsystem extends SubsystemBase {
   public Command getAutonomousCommand(String path) {
     AutonomousPath m_path = AutonomousPath.valueOf(path);
     switch (m_path) {
-      case DOCK_FORWARDS:
-        return (new AutoBalanceForward(m_autoBalance, m_drive));
-      case DOCK_BACKWARDS:
-        return (new AutoBalanceBackward(m_autoBalance, m_drive));
+    case DOCK_FORWARDS:
+      return (new AutoBalanceForward(m_autoBalance, m_drive));
+    case DOCK_BACKWARDS:
+      return (new AutoBalanceBackward(m_autoBalance, m_drive));
 
-      case MOBILITY_PATH_BACKWARDS:
-        return pathFollow("output/DockPath.wpilib.json", false);
-      case MOBILITY_PATH_FORWARDS:
-        return pathFollow("output/DockPath2.wpilib.json", false);
+    case MOBILITY_PATH_BACKWARDS:
+      return pathFollow("output/DockPath.wpilib.json", false);
+    case MOBILITY_PATH_FORWARDS:
+      return pathFollow("output/DockPath2.wpilib.json", false);
 
-      case CONE_MID:
-        return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorMid),
-            new WaitCommand(0.5))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRaise(m_intake, Constants.lowerIntake),
-                new WaitCommand(0.8)))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRoller(m_intake, Constants.coneRelease),
-                new WaitCommand(0.8)))
-            .andThen(new SetIntakeRaise(m_intake, Constants.stowIntake),
-                new WaitCommand(0.8))
-            .andThen(new ParallelRaceGroup(
-                new SetElevatorHeight(m_elevator,
-                    Constants.elevatorLow),
-                new WaitCommand(0.8)))
-            .andThen(new AutoBalanceBackward(m_autoBalance, m_drive));
-      case CONE_MID_DOCK:
-        return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorMid),
-            new WaitCommand(0.8))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRaise(m_intake, Constants.lowerIntake),
-                new WaitCommand(0.8)))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRoller(m_intake, Constants.coneRelease),
-                new WaitCommand(0.8)))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRaise(m_intake, Constants.stowIntake),
-                new WaitCommand(0.8)))
-            .andThen(new ParallelRaceGroup(
-                new SetElevatorHeight(m_elevator,
-                    Constants.elevatorLow),
-                new WaitCommand(0.8)));
-      case CONE_HIGH_DOCK:
-        return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorHigh),
-            new WaitCommand(1.2))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRaise(m_intake, Constants.lowerIntake),
-                new WaitCommand(1.2)))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRoller(m_intake, Constants.coneRelease),
-                new WaitCommand(0.8)))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRaise(m_intake, Constants.stowIntake),
-                new WaitCommand(1.2)))
-            .andThen(new ParallelRaceGroup(
-                new SetElevatorHeight(m_elevator,
-                    Constants.elevatorLow),
-                new WaitCommand(1.2)))
-            .andThen(new AutoBalanceBackward(m_autoBalance, m_drive));
-      case CONE_HIGH_MOBILITY:
-        return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorHigh),
-            new WaitCommand(0.8))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRaise(m_intake, Constants.lowerIntake),
-                new WaitCommand(0.8)))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRoller(m_intake, Constants.coneRelease),
-                new WaitCommand(1.2)))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRaise(m_intake, Constants.stowIntake),
-                new WaitCommand(0.8)))
-            .andThen(new ParallelRaceGroup(
-                new SetElevatorHeight(m_elevator,
-                    Constants.elevatorLow),
-                new WaitCommand(0.8)))
-            .andThen(pathFollow("output/Dockpath.wpilib.json", false));
-      case CONE_MOBILITY_DOCK:
-        return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorHigh),
-            new WaitCommand(1.2))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRaise(m_intake, Constants.lowerIntake),
-                new WaitCommand(1.2)))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRoller(m_intake, Constants.coneRelease),
-                new WaitCommand(0.8)))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRaise(m_intake, Constants.stowIntake),
-                new WaitCommand(1.2)))
-            .andThen(new ParallelRaceGroup(
-                new SetElevatorHeight(m_elevator,
-                    Constants.elevatorLow),
-                new WaitCommand(1.2)))
-            .andThen(pathFollow("output/DockPath.wpilib.json", false))
-            .andThen(new AutoBalanceForward(m_autoBalance, m_drive));
+    case CONE_MID:
+      return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorMid), new WaitCommand(0.5))
+          .andThen(new ParallelRaceGroup(new SetIntakeRaise(m_intake, Constants.lowerIntake), new WaitCommand(0.8)))
+          .andThen(new ParallelRaceGroup(new SetIntakeRoller(m_intake, Constants.coneRelease), new WaitCommand(0.8)))
+          .andThen(new SetIntakeRaise(m_intake, Constants.stowIntake), new WaitCommand(0.8))
+          .andThen(
+              new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorLow), new WaitCommand(0.8)))
+          .andThen(new AutoBalanceBackward(m_autoBalance, m_drive));
+    case CONE_MID_DOCK:
+      return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorMid), new WaitCommand(0.8))
+          .andThen(new ParallelRaceGroup(new SetIntakeRaise(m_intake, Constants.lowerIntake), new WaitCommand(0.8)))
+          .andThen(new ParallelRaceGroup(new SetIntakeRoller(m_intake, Constants.coneRelease), new WaitCommand(0.8)))
+          .andThen(new ParallelRaceGroup(new SetIntakeRaise(m_intake, Constants.stowIntake), new WaitCommand(0.8)))
+          .andThen(
+              new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorLow), new WaitCommand(0.8)));
+    case CONE_HIGH_DOCK:
+      return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorHigh), new WaitCommand(1.2))
+          .andThen(new ParallelRaceGroup(new SetIntakeRaise(m_intake, Constants.lowerIntake), new WaitCommand(1.2)))
+          .andThen(new ParallelRaceGroup(new SetIntakeRoller(m_intake, Constants.coneRelease), new WaitCommand(0.8)))
+          .andThen(new ParallelRaceGroup(new SetIntakeRaise(m_intake, Constants.stowIntake), new WaitCommand(1.2)))
+          .andThen(
+              new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorLow), new WaitCommand(1.2)))
+          .andThen(new AutoBalanceBackward(m_autoBalance, m_drive));
+    case CONE_HIGH_MOBILITY:
+      return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorHigh), new WaitCommand(0.8))
+          .andThen(new ParallelRaceGroup(new SetIntakeRaise(m_intake, Constants.lowerIntake), new WaitCommand(0.8)))
+          .andThen(new ParallelRaceGroup(new SetIntakeRoller(m_intake, Constants.coneRelease), new WaitCommand(1.2)))
+          .andThen(new ParallelRaceGroup(new SetIntakeRaise(m_intake, Constants.stowIntake), new WaitCommand(0.8)))
+          .andThen(
+              new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorLow), new WaitCommand(0.8)))
+          .andThen(pathFollow("output/Dockpath.wpilib.json", false));
+    case CONE_MOBILITY_DOCK:
+      return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorHigh), new WaitCommand(1.2))
+          .andThen(new ParallelRaceGroup(new SetIntakeRaise(m_intake, Constants.lowerIntake), new WaitCommand(1.2)))
+          .andThen(new ParallelRaceGroup(new SetIntakeRoller(m_intake, Constants.coneRelease), new WaitCommand(0.8)))
+          .andThen(new ParallelRaceGroup(new SetIntakeRaise(m_intake, Constants.stowIntake), new WaitCommand(1.2)))
+          .andThen(
+              new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorLow), new WaitCommand(1.2)))
+          .andThen(pathFollow("output/DockPath.wpilib.json", false))
+          .andThen(new AutoBalanceForward(m_autoBalance, m_drive));
 
-      case CUBE_LOW_AUTO_DOCK:
-        return new SetIntakeRoller(m_intake, Constants.releaseIntake)
-            .alongWith(new AutoBalanceBackward(m_autoBalance, m_drive));
-      case CUBE_LOW_MOBILITY:
-        return new ParallelRaceGroup(new SetIntakeRoller(m_intake, Constants.cubeRelease),
-            new WaitCommand(1.2))
-            .andThen(pathFollow("output/DockPath.wpilib.json", false));
-      case CUBE_MID_DOCK:
-        return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorMid),
-            new WaitCommand(0.8))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRoller(m_intake, Constants.cubeRelease),
-                new WaitCommand(0.8))
-                .andThen(new ParallelRaceGroup(
-                    new SetElevatorHeight(m_elevator,
-                        Constants.elevatorLow)),
-                    new WaitCommand(0.8))
-                .andThen(new AutoBalanceBackward(m_autoBalance,
-                    m_drive)));
-      case CUBE_HIGH_DOCK:
-        return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorHigh),
-            new WaitCommand(0.8))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRoller(m_intake, Constants.cubeRelease),
-                new WaitCommand(0.8))
-                .andThen(new ParallelRaceGroup(
-                    new SetElevatorHeight(m_elevator,
-                        Constants.elevatorLow)),
-                    new WaitCommand(1.2))
-                .andThen(new AutoBalanceBackward(m_autoBalance,
-                    m_drive)));
-      case CUBE_HIGH_ENGAGE:
-        return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorHigh),
-            new WaitCommand(1.2))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRoller(m_intake, Constants.cubeRelease),
-                new WaitCommand(1.2)))
-            .andThen(new ParallelRaceGroup(
-                new SetElevatorHeight(m_elevator,
-                    Constants.elevatorLow),
-                new WaitCommand(1.2)))
-            .andThen(pathFollow("output/EngageB.wpilib.json", false));
-      case CUBE_HIGH_MOBILITY:
-        return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorHigh),
-            new WaitCommand(0.8))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRoller(m_intake, Constants.cubeRelease),
-                new WaitCommand(1.2)))
-            .andThen(new ParallelRaceGroup(
-                new SetElevatorHeight(m_elevator,
-                    Constants.elevatorLow),
-                new WaitCommand(0.8)))
-            .andThen(pathFollow("output/DockPath.wpilib.json", false));
-      case CUBE_MOBILITY_DOCK:
-        return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorHigh),
-            new WaitCommand(1.2))
-            .andThen(new ParallelRaceGroup(
-                new SetIntakeRoller(m_intake, Constants.cubeRelease),
-                new WaitCommand(1.2)))
-            .andThen(new ParallelRaceGroup(
-                new SetElevatorHeight(m_elevator,
-                    Constants.elevatorLow),
-                new WaitCommand(1.2)))
-            .andThen(pathFollow("output/DockPath.wpilib.json", false))
-            .andThen(new AutoBalanceForward(m_autoBalance, m_drive));
-      default:
-        return null;
+    case CUBE_LOW_AUTO_DOCK:
+      return new SetIntakeRoller(m_intake, Constants.releaseIntake)
+          .alongWith(new AutoBalanceBackward(m_autoBalance, m_drive));
+    case CUBE_LOW_MOBILITY:
+      return new ParallelRaceGroup(new SetIntakeRoller(m_intake, Constants.cubeRelease), new WaitCommand(1.2))
+          .andThen(pathFollow("output/DockPath.wpilib.json", false));
+    case CUBE_MID_DOCK:
+      return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorMid), new WaitCommand(0.8))
+          .andThen(new ParallelRaceGroup(new SetIntakeRoller(m_intake, Constants.cubeRelease), new WaitCommand(0.8))
+              .andThen(new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorLow)),
+                  new WaitCommand(0.8))
+              .andThen(new AutoBalanceBackward(m_autoBalance, m_drive)));
+    case CUBE_HIGH_DOCK:
+      return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorHigh), new WaitCommand(0.8))
+          .andThen(new ParallelRaceGroup(new SetIntakeRoller(m_intake, Constants.cubeRelease), new WaitCommand(0.8))
+              .andThen(new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorLow)),
+                  new WaitCommand(1.2))
+              .andThen(new AutoBalanceBackward(m_autoBalance, m_drive)));
+    case CUBE_HIGH_ENGAGE:
+      return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorHigh), new WaitCommand(1.2))
+          .andThen(new ParallelRaceGroup(new SetIntakeRoller(m_intake, Constants.cubeRelease), new WaitCommand(1.2)))
+          .andThen(
+              new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorLow), new WaitCommand(1.2)))
+          .andThen(pathFollow("output/EngageB.wpilib.json", false));
+    case CUBE_HIGH_MOBILITY:
+      return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorHigh), new WaitCommand(0.8))
+          .andThen(new ParallelRaceGroup(new SetIntakeRoller(m_intake, Constants.cubeRelease), new WaitCommand(1.2)))
+          .andThen(
+              new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorLow), new WaitCommand(0.8)))
+          .andThen(pathFollow("output/DockPath.wpilib.json", false));
+    case CUBE_MOBILITY_DOCK:
+      return new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorHigh), new WaitCommand(1.2))
+          .andThen(new ParallelRaceGroup(new SetIntakeRoller(m_intake, Constants.cubeRelease), new WaitCommand(1.2)))
+          .andThen(
+              new ParallelRaceGroup(new SetElevatorHeight(m_elevator, Constants.elevatorLow), new WaitCommand(1.2)))
+          .andThen(pathFollow("output/DockPath.wpilib.json", false))
+          .andThen(new AutoBalanceForward(m_autoBalance, m_drive));
+    default:
+      return null;
     }
   }
 
@@ -235,9 +151,7 @@ public class AutonomousSubsystem extends SubsystemBase {
   }
 
   /*
-   * public List getPaths() {
-   * return AutonomousPath;
-   * }
+   * public List getPaths() { return AutonomousPath; }
    */
   public Command pathFollow(String path, boolean multiPath) {
     Trajectory trajectory = new Trajectory();
@@ -249,18 +163,12 @@ public class AutonomousSubsystem extends SubsystemBase {
       // Ignore...
     }
 
-    RamseteCommand ramseteCommand = new RamseteCommand(trajectory,
-        m_drive::getPose,
+    RamseteCommand ramseteCommand = new RamseteCommand(trajectory, m_drive::getPose,
         new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta),
-        new SimpleMotorFeedforward(Constants.ksVolts,
-            Constants.kvVoltSecondsPerMeter,
+        new SimpleMotorFeedforward(Constants.ksVolts, Constants.kvVoltSecondsPerMeter,
             Constants.kaVoltSecondsSquaredPerMeter),
-        Constants.m_driveKinematics,
-        m_drive::getWheelSpeeds,
-        new PIDController(1, 0, 0),
-        new PIDController(1, 0, 0),
-        m_drive::voltageControl,
-        m_drive);
+        Constants.m_driveKinematics, m_drive::getWheelSpeeds, new PIDController(1, 0, 0), new PIDController(1, 0, 0),
+        m_drive::voltageControl, m_drive);
 
     if (!multiPath) {
       m_drive.resetOdometry(trajectory.getInitialPose());

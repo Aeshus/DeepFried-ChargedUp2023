@@ -17,9 +17,7 @@ public class DriveDistance extends CommandBase {
   }
 
   @Override
-  public void initialize() {
-
-  }
+  public void initialize() {}
 
   @Override
   public void execute() {
@@ -27,9 +25,7 @@ public class DriveDistance extends CommandBase {
   }
 
   @Override
-  public void end(boolean interuppted) {
-
-  }
+  public void end(boolean interuppted) {}
 
   @Override
   public boolean isFinished() {

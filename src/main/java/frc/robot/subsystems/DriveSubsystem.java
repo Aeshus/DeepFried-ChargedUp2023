@@ -26,17 +26,13 @@ public class DriveSubsystem extends SubsystemBase {
   private WPI_TalonFX m_left2 = new WPI_TalonFX(3);
   private WPI_TalonFX m_right2 = new WPI_TalonFX(1);
 
-  private final MotorControllerGroup m_leftMotors = new MotorControllerGroup(
-      m_left1,
-      m_left2);
+  private final MotorControllerGroup m_leftMotors = new MotorControllerGroup(m_left1, m_left2);
 
   public MotorControllerGroup getLeftMotors() {
     return m_leftMotors;
   }
 
-  private final MotorControllerGroup m_rightMotors = new MotorControllerGroup(
-      m_right1,
-      m_right2);
+  private final MotorControllerGroup m_rightMotors = new MotorControllerGroup(m_right1, m_right2);
 
   public MotorControllerGroup getRightMotors() {
     return m_rightMotors;
@@ -127,8 +123,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Reset the current position for the motors.
-   * Useful for ramsete commands and path management
+   * Reset the current position for the motors. Useful for ramsete commands and
+   * path management
    */
   public void resetEncoders() {
     m_left1.setSelectedSensorPosition(-0);
