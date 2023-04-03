@@ -42,6 +42,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   private double leftEncoderPosition;
   private double leftEncoderVelocity;
+
   private double rightEncoderPosition;
   private double rightEncoderVelocity;
 
@@ -60,23 +61,23 @@ public class DriveSubsystem extends SubsystemBase {
     m_left1.setNeutralMode(NeutralMode.Brake);
     m_left2.setNeutralMode(NeutralMode.Brake);
 
-    m_left1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kDrivePIDIdx,
-        Constants.kDriveTimeoutMs);
-    m_right1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kDrivePIDIdx,
-        Constants.kDriveTimeoutMs);
+    m_left1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.drive_FeedbackPidIdx,
+        Constants.drive_FeedbackTimeout);
+    m_right1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.drive_FeedbackPidIdx,
+        Constants.drive_FeedbackTimeout);
 
     m_odometry = new DifferentialDriveOdometry(getHeading(), leftEncoderPosition, rightEncoderPosition);
 
     testMotors();
 
-    m_left1.configStatorCurrentLimit(
-        new StatorCurrentLimitConfiguration(true, Constants.CurrentLimit, 25, Constants.secondsForOpenRamp));
-    m_left2.configStatorCurrentLimit(
-        new StatorCurrentLimitConfiguration(true, Constants.CurrentLimit, 25, Constants.secondsForOpenRamp));
-    m_right1.configStatorCurrentLimit(
-        new StatorCurrentLimitConfiguration(true, Constants.CurrentLimit, 25, Constants.secondsForOpenRamp));
-    m_right2.configStatorCurrentLimit(
-        new StatorCurrentLimitConfiguration(true, Constants.CurrentLimit, 25, Constants.secondsForOpenRamp));
+    m_left1.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, Constants.drive_MotorCurrentLimit, 25,
+        Constants.drive_SecondsForOpenRamp));
+    m_left2.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, Constants.drive_MotorCurrentLimit, 25,
+        Constants.drive_SecondsForOpenRamp));
+    m_right1.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, Constants.drive_MotorCurrentLimit, 25,
+        Constants.drive_SecondsForOpenRamp));
+    m_right2.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, Constants.drive_MotorCurrentLimit, 25,
+        Constants.drive_SecondsForOpenRamp));
   }
 
   /**
@@ -113,11 +114,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    leftEncoderPosition = m_left1.getSelectedSensorPosition() * Constants.kEncoderDistancePerPulse;
-    rightEncoderPosition = m_right1.getSelectedSensorPosition() * Constants.kEncoderDistancePerPulse;
+    leftEncoderPosition = m_left1.getSelectedSensorPosition() * Constants.drive_EncoderDistancePerPulse;
+    rightEncoderPosition = m_right1.getSelectedSensorPosition() * Constants.drive_EncoderDistancePerPulse;
 
-    leftEncoderVelocity = m_left1.getSelectedSensorVelocity() * Constants.kEncoderDistancePerPulse;
-    rightEncoderVelocity = m_right1.getSelectedSensorVelocity() * Constants.kEncoderDistancePerPulse;
+    leftEncoderVelocity = m_left1.getSelectedSensorVelocity() * Constants.drive_EncoderDistancePerPulse;
+    rightEncoderVelocity = m_right1.getSelectedSensorVelocity() * Constants.drive_EncoderDistancePerPulse;
 
     m_odometry.update(getHeading(), leftEncoderPosition, rightEncoderPosition);
   }
@@ -175,18 +176,43 @@ public class DriveSubsystem extends SubsystemBase {
     return m_gyro.getRoll();
   }
 
+  /**
+   * Enables arcade-drive (used by autonomous driving)
+   * 
+   * @param speed    Normalized speed (-1 -> 1)
+   * @param rotation Normalized rotation (-1 -> 1)
+   */
   public void arcadeDrive(double speed, double rotation) {
     m_drive.arcadeDrive(speed, rotation);
   }
 
+  /**
+   * Enables curvature-drive (used by teleoperated driving)
+   * 
+   * @param speed    Normalzied speed (-1 -> 1)
+   * @param rotation Normalized rotation (-1 -> 1)
+   * @param turn     Turning in place?
+   */
   public void curvatureDrive(double speed, double rotation, boolean turn) {
     m_drive.curvatureDrive(speed, rotation, turn);
   }
 
+  /**
+   * Averages the distance between the two encoders
+   * 
+   * @return Average encoder distance
+   */
   public double getAverageEncoderDistance() {
-    return (leftEncoderPosition + rightEncoderPosition) / 2.0;
+    return (double) (leftEncoderPosition + rightEncoderPosition) / (double) 2;
   }
 
+  /**
+   * Gets the speed of the two wheels.
+   * <p>
+   * m/s
+   * 
+   * @return Velocity of encoders
+   */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(leftEncoderVelocity, rightEncoderVelocity);
   }

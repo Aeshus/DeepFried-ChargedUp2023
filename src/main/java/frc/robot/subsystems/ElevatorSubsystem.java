@@ -41,6 +41,9 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     return getRightEncoderPos();
   }
 
+  /**
+   * Resets (only?) the right encoder
+   */
   public void resetEncoders() {
     m_rightEncoder.setPosition(0);
   }

@@ -8,6 +8,13 @@ public class DriveDistance extends CommandBase {
   private final double m_dist;
   private final double m_speed;
 
+  /**
+   * Drives forward specified inches at given speed
+   * 
+   * @param drive  Drive Subsystem
+   * @param inches Distance
+   * @param speed  Speed of motors
+   */
   public DriveDistance(DriveSubsystem drive, double inches, double speed) {
     m_drive = drive;
     m_dist = inches;

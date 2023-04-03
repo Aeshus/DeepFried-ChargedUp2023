@@ -12,6 +12,12 @@ public class AutoBalanceForward extends CommandBase {
   private final AutoBalanceSubsystem m_autoBalance;
   private final DriveSubsystem m_drive;
 
+  /**
+   * Executes the auto-balance-forward routine.
+   * 
+   * @param autoBalance Autobalance Subsystem
+   * @param drive       Drive Subsystem
+   */
   public AutoBalanceForward(AutoBalanceSubsystem autoBalance, DriveSubsystem drive) {
     m_autoBalance = autoBalance;
     m_drive = drive;

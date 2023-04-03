@@ -7,6 +7,12 @@ public class SetIntakeRaise extends CommandBase {
   private final IntakeSubsystem m_intake;
   private final double m_speed;
 
+  /**
+   * Sets the Intake Raise to given speed
+   * 
+   * @param intake Intake Subsystem
+   * @param speed  Speed to set the raise to
+   */
   public SetIntakeRaise(IntakeSubsystem intake, double speed) {
     m_intake = intake;
     m_speed = speed;

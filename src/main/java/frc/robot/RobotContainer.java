@@ -47,6 +47,12 @@ public class RobotContainer {
     setupDashboard();
   }
 
+  /**
+   * Initialize the smart dashboard and auto chooser.
+   * <p>
+   * It iterates over all the avalible autonomous commands and populates the smart
+   * dashboard.
+   */
   private void setupDashboard() {
     Arrays.stream(m_auto.getCommands())
         .forEach(name -> autoChooser.addOption(name.replaceAll("_", " ").toLowerCase(), name));
@@ -54,6 +60,9 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Routine", autoChooser);
   }
 
+  /**
+   * Setup the default keybinds
+   */
   private void setDefaultKeybinds() {
     // onTrue vs. toggleOnTrue?
 
@@ -63,19 +72,31 @@ public class RobotContainer {
     new JoystickButton(m_operatorController, Button.kX.value).onTrue(new SetElevatorHeight(m_elevator, -60));
 
     new JoystickButton(m_operatorController, Button.kRightBumper.value).onTrue(new SetIntakeRoller(m_intake, 1))
-        .onFalse(new SetIntakeRoller(m_intake, Constants.coneRelease));
+        .onFalse(new SetIntakeRoller(m_intake, Constants.intake_ConeRelease));
     new JoystickButton(m_operatorController, Button.kLeftBumper.value).onTrue(new SetIntakeRoller(m_intake, -0.8))
-        .onFalse(new SetIntakeRoller(m_intake, Constants.cubeRelease));
+        .onFalse(new SetIntakeRoller(m_intake, Constants.intake_CubeRelease));
   }
 
+  /**
+   * Get the autonomous command from the Smart Dashboard's name
+   * 
+   * @param path Name of the path
+   * @return Command
+   */
   public Command getAutonomousCommand(String path) {
     return m_auto.getAutonomousCommand(path);
   }
 
+  /**
+   * Initialize the autonomous system
+   */
   public void autonomousInit() {
     m_auto.autonomousInit();
   }
 
+  /**
+   * Initialize the teloperated system (manual control)
+   */
   public void teleOperatedInit() {
     m_drive.resetEncoders();
   }

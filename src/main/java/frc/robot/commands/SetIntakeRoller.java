@@ -7,6 +7,12 @@ public class SetIntakeRoller extends CommandBase {
   private final IntakeSubsystem m_intake;
   private final double m_speed;
 
+  /**
+   * Sets the Intake Roller to given speed
+   * 
+   * @param intake Intake Subsystem
+   * @param speed  Speed to set the roller to
+   */
   public SetIntakeRoller(IntakeSubsystem intake, double speed) {
     m_intake = intake;
     m_speed = speed;

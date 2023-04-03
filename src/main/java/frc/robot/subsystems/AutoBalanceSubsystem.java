@@ -68,49 +68,54 @@ public class AutoBalanceSubsystem extends SubsystemBase {
     return (int) (time * 50);
   }
 
+  /**
+   * Does some voodoo magic.
+   * 
+   * @return Normalized speed (-1 -> 1)
+   */
   public double autoBalanceRoutineBackward() {
     switch (m_state) {
     case APPROACH_STATION:
-      if (getTilt() > Constants.onChargeStationDegree) {
+      if (getTilt() > Constants.autob_ChargeStationDegree) {
         m_debounceCount++;
       }
 
-      if (m_debounceCount > secondsToTicks(Constants.debounceTimeBackward)) {
+      if (m_debounceCount > secondsToTicks(Constants.autob_DebounceTimeBackward)) {
         m_state = autoState.UP_STATION;
         m_debounceCount = 0;
 
-        return Constants.robotSpeedSlow;
+        return Constants.autob_SpeedSlow;
       }
 
-      return Constants.robotSpeedFast;
+      return Constants.autob_SpeedFast;
     case UP_STATION:
-      if (getTilt() < Constants.levelDegree) {
+      if (getTilt() < Constants.autob_LevelDegree) {
         m_debounceCount++;
       }
 
-      if (m_debounceCount > secondsToTicks(Constants.debounceTimeBackward)) {
+      if (m_debounceCount > secondsToTicks(Constants.autob_DebounceTimeBackward)) {
         m_state = autoState.ON_STATION;
         m_debounceCount = 0;
 
         return 0.0;
       }
 
-      return Constants.robotSpeedSlow;
+      return Constants.autob_SpeedSlow;
     case ON_STATION:
-      if (Math.abs(getTilt()) <= Constants.levelDegree / 2) {
+      if (Math.abs(getTilt()) <= Constants.autob_LevelDegree / 2) {
         m_debounceCount++;
       }
 
-      if (m_debounceCount > secondsToTicks(Constants.debounceTimeBackward)) {
+      if (m_debounceCount > secondsToTicks(Constants.autob_DebounceTimeBackward)) {
         m_state = autoState.DONE;
         m_debounceCount = 0;
 
         return 0.0;
       }
 
-      if (getTilt() >= Constants.levelDegree) {
+      if (getTilt() >= Constants.autob_LevelDegree) {
         return -0.1;
-      } else if (getTilt() <= -Constants.levelDegree) {
+      } else if (getTilt() <= -Constants.autob_LevelDegree) {
         return -0.1;
       }
 
@@ -120,53 +125,58 @@ public class AutoBalanceSubsystem extends SubsystemBase {
       return 0.0;
     }
 
-    // If state is somehow null
+    // If state is somehow null...
     return 0.0;
   }
 
+  /**
+   * Does some voodoo magic.
+   * 
+   * @return Normalized speed (-1 -> 1)
+   */
   public double autoBalanceRoutineForward() {
     switch (m_state) {
     case APPROACH_STATION:
-      if (getTilt() > Constants.onChargeStationDegree) {
+      if (getTilt() > Constants.autob_ChargeStationDegree) {
         m_debounceCount++;
       }
 
-      if (m_debounceCount > secondsToTicks(Constants.debounceTimeForward)) {
+      if (m_debounceCount > secondsToTicks(Constants.autob_DebounceTimeForward)) {
         m_state = autoState.UP_STATION;
         m_debounceCount = 0;
 
-        return Constants.robotSpeedSlow;
+        return Constants.autob_SpeedSlow;
       }
 
-      return Constants.robotSpeedFast;
+      return Constants.autob_SpeedFast;
     case UP_STATION:
-      if (getTilt() < Constants.levelDegree) {
+      if (getTilt() < Constants.autob_LevelDegree) {
         m_debounceCount++;
       }
 
-      if (m_debounceCount > secondsToTicks(Constants.debounceTimeForward)) {
+      if (m_debounceCount > secondsToTicks(Constants.autob_DebounceTimeForward)) {
         m_state = autoState.ON_STATION;
         m_debounceCount = 0;
 
         return 0.0;
       }
 
-      return Constants.robotSpeedSlow;
+      return Constants.autob_SpeedSlow;
     case ON_STATION:
-      if (Math.abs(getTilt()) <= Constants.levelDegree / 2) {
+      if (Math.abs(getTilt()) <= Constants.autob_LevelDegree / 2) {
         m_debounceCount++;
       }
 
-      if (m_debounceCount > secondsToTicks(Constants.debounceTimeForward)) {
+      if (m_debounceCount > secondsToTicks(Constants.autob_DebounceTimeForward)) {
         m_state = autoState.DONE;
         m_debounceCount = 0;
 
         return 0.0;
       }
 
-      if (getTilt() >= Constants.levelDegree) {
+      if (getTilt() >= Constants.autob_LevelDegree) {
         return -0.1;
-      } else if (getTilt() <= -Constants.levelDegree) {
+      } else if (getTilt() <= -Constants.autob_LevelDegree) {
         return -0.1;
       }
 

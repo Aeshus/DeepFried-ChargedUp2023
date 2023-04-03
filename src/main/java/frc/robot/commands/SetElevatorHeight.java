@@ -7,6 +7,12 @@ public class SetElevatorHeight extends CommandBase {
   private final ElevatorSubsystem m_elevator;
   private final double m_height;
 
+  /**
+   * Sets elevator height
+   * 
+   * @param elevatorSubsystem Elevator Subystem
+   * @param height            Height of elevator
+   */
   public SetElevatorHeight(ElevatorSubsystem elevatorSubsystem, double height) {
     m_elevator = elevatorSubsystem;
     m_height = height;

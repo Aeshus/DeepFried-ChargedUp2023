@@ -14,6 +14,11 @@ public class InvertMotors extends CommandBase {
   private MotorControllerGroup m_leftMotors;
   private MotorControllerGroup m_rightMotors;
 
+  /**
+   * Inverst motors
+   * 
+   * @param driveSubsystem Drive Subsystem
+   */
   public InvertMotors(DriveSubsystem driveSubsystem) {
     m_drive = driveSubsystem;
 

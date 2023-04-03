@@ -10,6 +10,13 @@ public class DefaultDrive extends CommandBase {
     private final DoubleSupplier m_xSpeed;
     private final DoubleSupplier m_zRotation;
 
+    /**
+     * Sets the default driving mode
+     * 
+     * @param drive    Drive Subsystem
+     * @param speed    Motor Speed
+     * @param rotation Rotation
+     */
     public DefaultDrive(DriveSubsystem drive, DoubleSupplier speed, DoubleSupplier rotation) {
         m_drive = drive;
         m_xSpeed = speed;
